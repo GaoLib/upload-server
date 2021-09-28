@@ -1,4 +1,7 @@
+const md5 = require('md5')
 const BaseController = require('./base')
+
+const hashSalt = ':GaoLib'
 
 const createRule = {
   email: { type: 'email' },
@@ -29,8 +32,12 @@ class UserController extends BaseController {
         const ret = await ctx.model.User.create({
           email,
           nickname,
-          passwd
+          passwd: md5(passwd + hashSalt)
         })
+
+        if (ret.id) {
+          this.message('注册成功')
+        }
       }
     } else {
       this.error('验证码错误')
