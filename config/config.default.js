@@ -38,6 +38,9 @@ module.exports = appInfo => {
           dbName: 'upload'
         }
       }
+    },
+    jwt: {
+      secret: 'uploadJwt!'
     }
   }
 }

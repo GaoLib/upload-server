@@ -1,4 +1,5 @@
 const md5 = require('md5')
+const jwt = require('jsonwebtoken')
 const BaseController = require('./base')
 
 const hashSalt = ':GaoLib'
@@ -12,8 +13,27 @@ const createRule = {
 
 class UserController extends BaseController {
   async login() {
-    const { ctx } = this
-    ctx.body = 'hi, egg'
+    const { ctx, app } = this
+    const { email, passwd, captcha } = ctx.request.body
+    if (captcha.toUpperCase() !== ctx.session.captcha.toUpperCase()) {
+      return this.error('验证码错误')
+    }
+    const user = await ctx.model.User.findOne({
+      email,
+      passwd: md5(passwd + hashSalt)
+    })
+
+    if (!user) {
+      return this.error('用户名密码错误')
+    }
+
+    const token = jwt.sign({
+      _id: user._id,
+      email
+    }, app.config.jwt.secret, {
+      expiresIn: '1h'
+    })
+    this.success({ token, email, nickname: user.nickname })
   }
 
   async register() {
@@ -25,22 +45,23 @@ class UserController extends BaseController {
     }
 
     const { email, passwd, captcha, nickname } = ctx.request.body
-    if (captcha.toUpperCase() === ctx.session.captcha.toUpperCase()) {
-      if (await this.checkEmail(email)) {
-        this.error('邮箱重复')
-      } else {
-        const ret = await ctx.model.User.create({
-          email,
-          nickname,
-          passwd: md5(passwd + hashSalt)
-        })
 
-        if (ret.id) {
-          this.message('注册成功')
-        }
-      }
+    if (captcha.toUpperCase() !== ctx.session.captcha.toUpperCase()) {
+      return this.error('验证码错误')
+    }
+
+    if (await this.checkEmail(email)) {
+      this.error('邮箱重复')
     } else {
-      this.error('验证码错误')
+      const ret = await ctx.model.User.create({
+        email,
+        nickname,
+        passwd: md5(passwd + hashSalt)
+      })
+
+      if (ret.id) {
+        this.message('注册成功')
+      }
     }
   }
 
