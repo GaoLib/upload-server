@@ -82,7 +82,9 @@ class UserController extends BaseController {
 
   async info() {
     const { ctx } = this
-    ctx.body = 'hi, egg'
+    const { email } = ctx.state
+    const user = await this.checkEmail(email)
+    this.success(user)
   }
 }
 

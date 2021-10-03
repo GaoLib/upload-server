@@ -3,8 +3,9 @@ module.exports = app => {
   const Schema = mongoose.Schema
 
   const UserShema = new Schema({
+    __v: { type: Number, select: false },
     email: { type: String, required: true },
-    passwd: { type: String, required: true },
+    passwd: { type: String, required: true, select: false },
     nickname: { type: String, required: true },
     avatar: { type: String, required: false, default: '/user.png' }
   }, { timestamps: true })
