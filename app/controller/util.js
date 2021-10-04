@@ -31,6 +31,14 @@ class UtilController extends BaseController {
       this.error('发送失败')
     }
   }
+
+  async uploadfile() {
+    const { ctx } = this
+    const file = request.files[0]
+    const { name } = request.body
+    console.log(name, file)
+    this.success('上传成功')
+  }
 }
 
 module.exports = UtilController
