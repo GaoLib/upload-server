@@ -1,5 +1,6 @@
 const BaseController = require('./base')
 const svgCaptcha = require('svg-captcha')
+const fse = require('fs-extra')
 
 class UtilController extends BaseController {
   async captcha() {
@@ -34,10 +35,13 @@ class UtilController extends BaseController {
 
   async uploadfile() {
     const { ctx } = this
-    const file = request.files[0]
-    const { name } = request.body
+    const file = ctx.request.files[0]
+    const { name } = ctx.request.body
     console.log(name, file)
-    this.success('上传成功')
+    await fse.move(file.filepath, this.config.UPLOAD_DIR + '/' + file.filename)
+    this.success({
+      url: `public/${file.filename}`
+    })
   }
 }
 
