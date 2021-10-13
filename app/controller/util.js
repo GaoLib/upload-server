@@ -1,6 +1,7 @@
 const BaseController = require('./base')
 const svgCaptcha = require('svg-captcha')
 const fse = require('fs-extra')
+const path = require('path')
 
 class UtilController extends BaseController {
   async captcha() {
@@ -36,11 +37,19 @@ class UtilController extends BaseController {
   async uploadfile() {
     const { ctx } = this
     const file = ctx.request.files[0]
-    const { name } = ctx.request.body
-    await fse.move(file.filepath, this.config.UPLOAD_DIR + '/' + file.filename)
-    this.success({
-      url: `public/${file.filename}`
-    })
+    const { hash, name } = ctx.request.body
+
+    const chunkPath = path.resolve(this.config.UPLOAD_DIR, hash)
+    // const filePath = path.resolve()
+
+    if (!fse.exists(chunkPath)) {
+      await fse.mkdir(chunkPath)
+    }
+    await fse.move(file.filepath, `${chunkPath}/${name}`)
+    // this.success({
+    //   url: `public/${file.filename}`
+    // })
+    this.message('切片上传成功')
   }
 }
 
