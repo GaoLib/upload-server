@@ -14,6 +14,7 @@ module.exports = app => {
   // 上传文件
   router.post('/uploadfile', controller.util.uploadfile)
   router.post('/mergefile', controller.util.mergefile)
+  router.post('/checkfile', controller.util.checkfile)
 
   router.group({ name: 'user', prefix:'/user' }, router => {
     const { info, register, login, verify } = controller.user
