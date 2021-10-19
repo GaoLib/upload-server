@@ -35,6 +35,11 @@ class UtilController extends BaseController {
   }
 
   async uploadfile() {
+    // ! 模拟上传报错
+    if (Math.random() < 0.3) {
+      return this.ctx.status = 500
+    }
+
     const { ctx } = this
     const file = ctx.request.files[0]
     const { hash, name } = ctx.request.body
