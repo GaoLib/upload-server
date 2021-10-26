@@ -21,6 +21,7 @@ module.exports = app => {
     router.post('/register', register)
     router.post('/login', login)
     router.get('/info', jwt, info)
+    router.get('/detail', jwt, info)
     router.get('/verify', verify)
   })
 }
